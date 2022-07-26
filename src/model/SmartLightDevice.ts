@@ -1,7 +1,9 @@
 class SmartLightDevice {
 	name: string;
+	id: string;
 
-	constructor(name: string) {
+	constructor(id: string, name: string) {
+		this.id = id;
 		this.name = name
 	}
 }
