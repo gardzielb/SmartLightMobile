@@ -3,9 +3,13 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { Button, Card, Paragraph, Title } from "react-native-paper";
 import SmartLightDevice from "../model/SmartLightDevice";
 import DeviceRepository from '../data/DeviceRepository';
+import MainScreen from './MainScreen';
 
+type DevicesViewProps = {
+	parent: MainScreen
+}
 
-class DevicesView extends React.Component<any, any> {
+class DevicesView extends React.Component<DevicesViewProps, any> {
 	state = {
 		devices: new Array<SmartLightDevice>()
 	}
@@ -41,7 +45,8 @@ class DevicesView extends React.Component<any, any> {
 	private renderDeviceCard(item: SmartLightDevice) {
 		return (
 			<Card mode="outlined" style={this.styles.deviceCard}
-				  onLongPress={() => console.log(`${item.name} selected`)}>
+				  onLongPress={() => console.log(`${item.name} selected`)}
+				  onPress={() => this.props.parent.goToDeviceControlScreen(item)}>
 
 				<Card.Content style={{ alignItems: "center" }}>
 					<Title>{item.name}</Title>
