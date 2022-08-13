@@ -4,8 +4,15 @@ import { RootStackParams } from '../RootStackParams';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, Switch } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
+import { TimePicker } from 'react-native-simple-time-picker';
 
 type DevControlScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceControl'>
+
+type TimeDelay = {
+	hours: number,
+	minutes: number,
+	seconds: number
+}
 
 type DevControlScreenState = {
 	lightOn: boolean,
@@ -13,7 +20,8 @@ type DevControlScreenState = {
 	lightAlpha: number,
 	fadeOut: boolean,
 	fadeDuration: number,
-	executionTime: Date | null
+	delayExecution: boolean,
+	executionDelay: TimeDelay
 }
 
 const styles = StyleSheet.create({
@@ -62,28 +70,78 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 			lightAlpha: 50,
 			fadeOut: false,
 			fadeDuration: 10,
-			executionTime: null
+			delayExecution: false,
+			executionDelay: {
+				hours: 0,
+				minutes: 0,
+				seconds: 0
+			}
 		};
 	}
 
-	onLightToggled = (on: boolean) => {
+	private onLightToggled = (on: boolean) => {
 		this.setState((current) => ({ ...current, lightOn: on }));
 	}
 
-	chooseColor = () => {
+	private chooseColor = () => {
 		console.log('Selecting color');
 	}
 
-	onAlphaChange = (alpha: number) => {
+	private onAlphaChange = (alpha: number) => {
 		this.setState((current) => ({ ...current, lightAlpha: alpha }));
 	}
 
-	onFadeToggled = (on: boolean) => {
+	private onFadeToggled = (on: boolean) => {
 		this.setState((current) => ({ ...current, fadeOut: on }));
 	}
 
-	onFadeDurationChange = (duration: number) => {
+	private onFadeDurationChange = (duration: number) => {
 		this.setState((current) => ({ ...current, fadeDuration: duration }));
+	}
+
+	private onDelayToggled = (delay: boolean) => {
+		this.setState((current) => ({ ...current, delayExecution: delay }))
+	}
+
+	private onExecutionDelayChange = (delay: TimeDelay) => {
+		this.setState((current) => ({ ...current, executionDelay: delay }))
+	}
+
+	private execute = () => {
+		console.log(this.state);
+	}
+
+	private FadeDurationRow = () => {
+		if (!this.state.fadeOut)
+			return null;
+
+		return (
+			<Row>
+				<Column span={1}>
+					<Text style={styles.text}>Fading duration</Text>
+				</Column>
+				<Column span={1}>
+					<Slider minimumValue={3} maximumValue={15} step={1} value={this.state.fadeDuration}
+							onValueChange={this.onFadeDurationChange}/>
+				</Column>
+			</Row>
+		);
+	}
+
+	private ExecutionDelayRow = () => {
+		if (!this.state.delayExecution)
+			return null;
+
+		return (
+			<Row>
+				<Column span={2}>
+					<TimePicker value={this.state.executionDelay}
+								pickerShows={['hours', 'minutes', 'seconds']}
+								hoursUnit="h" minutesUnit="m" secondsUnit="s"
+								onChange={this.onExecutionDelayChange}/>
+				</Column>
+			</Row>
+		);
 	}
 
 	render() {
@@ -125,26 +183,20 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 						<Switch style={styles.switch} value={this.state.fadeOut} onValueChange={this.onFadeToggled}/>
 					</Column>
 				</Row>
-				<Row>
-					<Column span={1}>
-						<Text style={styles.text}>Fading duration</Text>
-					</Column>
-					<Column span={1}>
-						<Slider minimumValue={3} maximumValue={15} step={1} value={this.state.fadeDuration}
-								onValueChange={this.onFadeDurationChange}/>
-					</Column>
-				</Row>
+				<this.FadeDurationRow/>
 				<Row>
 					<Column span={1}>
 						<Text style={styles.text}>Delay execution</Text>
 					</Column>
 					<Column span={1}>
-						<Switch style={styles.switch} value={this.state.executionTime != null}/>
+						<Switch style={styles.switch} value={this.state.delayExecution}
+								onValueChange={this.onDelayToggled}/>
 					</Column>
 				</Row>
+				<this.ExecutionDelayRow/>
 				<Row>
 					<Column span={2}>
-						<Button>Execute</Button>
+						<Button onPress={this.execute}>Execute</Button>
 					</Column>
 				</Row>
 			</View>
