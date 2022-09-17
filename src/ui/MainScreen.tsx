@@ -15,7 +15,11 @@ class MainScreen extends React.Component<MainScreenProps, any> {
 	});
 
 	goToDeviceControlScreen(device: SmartLightDevice) {
-		this.props.navigation.navigate('DeviceControl', { device: device })
+		this.props.navigation.navigate('DeviceControl', { device: device });
+	}
+
+	goToDeviceSetupScreen() {
+		this.props.navigation.navigate('DeviceSetup');
 	}
 
 	render() {

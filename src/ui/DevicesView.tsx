@@ -1,6 +1,6 @@
 import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import { Button, Card, Paragraph, Title } from "react-native-paper";
+import { FlatList, StyleSheet, TextInput } from "react-native";
+import { Button, Card, Modal, Paragraph, Portal, Provider, Text, Title } from "react-native-paper";
 import SmartLightDevice from "../model/SmartLightDevice";
 import DeviceRepository from '../data/DeviceRepository';
 import MainScreen from './MainScreen';
@@ -9,9 +9,18 @@ type DevicesViewProps = {
 	parent: MainScreen
 }
 
-class DevicesView extends React.Component<DevicesViewProps, any> {
-	state = {
-		devices: new Array<SmartLightDevice>()
+type DevicesViewState = {
+	devices: Array<SmartLightDevice>,
+	addDevice: boolean
+}
+
+class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
+	constructor(props: DevicesViewProps) {
+		super(props);
+		this.state = {
+			devices: new Array<SmartLightDevice>(),
+			addDevice: false
+		};
 	}
 
 	private deviceRepository = new DeviceRepository();
@@ -20,6 +29,10 @@ class DevicesView extends React.Component<DevicesViewProps, any> {
 			marginLeft: '2%',
 			marginTop: '2%',
 			width: '47%'
+		},
+		modal: {
+			backgroundColor: 'white',
+			padding: 20
 		}
 	});
 
@@ -30,15 +43,23 @@ class DevicesView extends React.Component<DevicesViewProps, any> {
 	render() {
 		console.log(this.state.devices)
 		return (
-			<View>
+			<Provider>
+				<Portal>
+					<Modal visible={this.state.addDevice} onDismiss={() => this.showAddDeviceModal(false)}
+						   contentContainerStyle={this.styles.modal}>
+						<Text>Device name</Text>
+						<TextInput/>
+						<Button onPress={this.addDevice}>Add</Button>
+					</Modal>
+				</Portal>
 				<FlatList
 					data={this.state.devices}
 					renderItem={({ item }) => this.renderDeviceCard(item)}
 					numColumns={2}
 					keyExtractor={(item, index) => index.toString()}/>
 
-				<Button onPress={() => this.addDevice()}>Add device</Button>
-			</View>
+				<Button onPress={() => this.showAddDeviceModal(true)}>Add device</Button>
+			</Provider>
 		);
 	}
 
@@ -57,22 +78,13 @@ class DevicesView extends React.Component<DevicesViewProps, any> {
 		);
 	}
 
-	private devNameIndex = 0
+	private showAddDeviceModal = (visible: boolean) => {
+		this.setState((current) => ({ ...current, addDevice: visible }));
+	}
 
-	private async addDevice() {
-		let names = ['Balerion', 'Meraxes', 'Caraxes', 'Vermithor', 'Dreamfyre']
-
-		await this.deviceRepository.addDevice(
-			names[this.devNameIndex],
-			device => {
-				let devices = this.state.devices;
-				devices.push(device);
-				this.setState({ devices: devices });
-				this.render();
-			}
-		)
-
-		this.devNameIndex = (this.devNameIndex + 1) % names.length
+	private addDevice = () => {
+		this.setState((current) => ({ ...current, addDevice: false }));
+		this.props.parent.goToDeviceSetupScreen();
 	}
 }
 
