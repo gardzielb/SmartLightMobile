@@ -9,8 +9,10 @@ import SmartLightDevice from '../model/SmartLightDevice';
 type MainScreenProps = NativeStackScreenProps<RootStackParams, "Main">;
 
 class MainScreen extends React.Component<MainScreenProps, any> {
+	private devicesView: DevicesView | undefined | null;
+
 	private renderScene = SceneMap({
-		devices: () => (<DevicesView parent={this}/>),
+		devices: () => (<DevicesView parent={this} ref={view => this.devicesView = view}/>),
 		groups: GroupsView
 	});
 
@@ -23,6 +25,11 @@ class MainScreen extends React.Component<MainScreenProps, any> {
 	}
 
 	render() {
+		let newDeviceName = this.props.route.params?.newDeviceName;
+		if (newDeviceName !== undefined) {
+			this.devicesView?.addDeviceUpdateState(newDeviceName);
+		}
+
 		const index = 0;
 		const routes = [
 			{ key: "devices", title: "Devices" },

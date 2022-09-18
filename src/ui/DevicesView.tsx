@@ -6,7 +6,8 @@ import DeviceRepository from '../data/DeviceRepository';
 import MainScreen from './MainScreen';
 
 type DevicesViewProps = {
-	parent: MainScreen
+	parent: MainScreen,
+	// newDeviceName: string | undefined
 }
 
 type DevicesViewState = {
@@ -37,11 +38,22 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 	});
 
 	async componentDidMount() {
+		console.log('Mounted devices view');
 		this.setState({ devices: await this.deviceRepository.getAll() });
 	}
 
+	addDeviceUpdateState(deviceName: string) {
+		this.deviceRepository.addDevice(
+			deviceName,
+			device => {
+				let devices = this.state.devices;
+				devices.push(device);
+				this.setState({ devices: devices });
+			}
+		).then();
+	}
+
 	render() {
-		console.log(this.state.devices)
 		return (
 			<Provider>
 				<Portal>
@@ -49,7 +61,7 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 						   contentContainerStyle={this.styles.modal}>
 						<Text>Device name</Text>
 						<TextInput/>
-						<Button onPress={this.addDevice}>Add</Button>
+						<Button onPress={this.initDeviceSetup}>Add</Button>
 					</Modal>
 				</Portal>
 				<FlatList
@@ -82,7 +94,7 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 		this.setState((current) => ({ ...current, addDevice: visible }));
 	}
 
-	private addDevice = () => {
+	private initDeviceSetup = () => {
 		this.setState((current) => ({ ...current, addDevice: false }));
 		this.props.parent.goToDeviceSetupScreen();
 	}
