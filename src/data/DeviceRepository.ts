@@ -7,20 +7,21 @@ const DeviceSchema = {
 	name: 'Device',
 	properties: {
 		_id: 'objectId',
-		name: 'string'
+		name: 'string',
+		mac: 'string'
 	},
 	primaryKey: '_id'
 };
 
 export default class DeviceRepository {
-	async addDevice(deviceName: string, callback: (device: SmartLightDevice) => void) {
+	async addDevice(device: SmartLightDevice, callback: (device: SmartLightDevice) => void) {
 		let realm = await this.openRealm();
 		realm.write(() => {
 			let deviceEntity = realm.create(
 				'Device',
 				{
 					_id: new ObjectId(),
-					name: deviceName
+					... device
 				}
 			);
 			callback(this.processEntity(deviceEntity));
@@ -46,7 +47,7 @@ export default class DeviceRepository {
 	private processEntity(deviceEntity: Object) {
 		let devProps = deviceEntity.entries();
 		let devName = devProps.filter(prop => prop[0] == 'name').map(prop => prop[1])[0];
-		let devId = devProps.filter(prop => prop[0] == '_id').map(prop => prop[1])[0]
-		return new SmartLightDevice(devId.toString(), devName);
+		let devMac = devProps.filter(prop => prop[0] == 'mac').map(prop => prop[1])[0];
+		return new SmartLightDevice(devName, devMac);
 	}
 }

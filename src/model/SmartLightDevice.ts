@@ -1,10 +1,10 @@
 class SmartLightDevice {
 	name: string;
-	id: string;
+	mac: string
 
-	constructor(id: string, name: string) {
-		this.id = id;
-		this.name = name
+	constructor(name: string, mac: string) {
+		this.name = name;
+		this.mac = mac;
 	}
 }
 

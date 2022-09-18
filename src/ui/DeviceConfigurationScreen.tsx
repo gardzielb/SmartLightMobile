@@ -5,6 +5,7 @@ import { Text } from 'react-native-paper';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import { StyleSheet } from 'react-native';
+import SmartLightDevice from '../model/SmartLightDevice';
 
 type DevSetupScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceSetup'>
 
@@ -20,7 +21,8 @@ export default class DeviceConfigurationScreen extends React.Component<DevSetupS
 
 	private onSuccess = async (event: BarCodeReadEvent) => {
 		console.log(`Decoded device address: ${event.data}`);
-		this.props.navigation.navigate('Main', { newDeviceName: event.data });
+		let addedDevice = new SmartLightDevice(this.props.route.params.deviceName, event.data);
+		this.props.navigation.navigate('Main', { addedDevice: addedDevice });
 	};
 
 	render() {

@@ -20,14 +20,14 @@ class MainScreen extends React.Component<MainScreenProps, any> {
 		this.props.navigation.navigate('DeviceControl', { device: device });
 	}
 
-	goToDeviceSetupScreen() {
-		this.props.navigation.navigate('DeviceSetup');
+	goToDeviceSetupScreen(deviceName: string) {
+		this.props.navigation.navigate('DeviceSetup', { deviceName: deviceName });
 	}
 
 	render() {
-		let newDeviceName = this.props.route.params?.newDeviceName;
-		if (newDeviceName !== undefined) {
-			this.devicesView?.addDeviceUpdateState(newDeviceName);
+		let addedDevice = this.props.route.params?.addedDevice;
+		if (addedDevice !== undefined) {
+			this.devicesView?.addDeviceUpdateState(addedDevice);
 		}
 
 		const index = 0;

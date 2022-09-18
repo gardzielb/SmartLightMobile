@@ -1,18 +1,18 @@
 import React from "react";
-import { FlatList, StyleSheet, TextInput } from "react-native";
-import { Button, Card, Modal, Paragraph, Portal, Provider, Text, Title } from "react-native-paper";
+import { FlatList, StyleSheet } from "react-native";
+import { Button, Card, Modal, Paragraph, Portal, Provider, Title, TextInput } from "react-native-paper";
 import SmartLightDevice from "../model/SmartLightDevice";
 import DeviceRepository from '../data/DeviceRepository';
 import MainScreen from './MainScreen';
 
 type DevicesViewProps = {
-	parent: MainScreen,
-	// newDeviceName: string | undefined
+	parent: MainScreen
 }
 
 type DevicesViewState = {
 	devices: Array<SmartLightDevice>,
-	addDevice: boolean
+	addDevice: boolean,
+	addDeviceName: string
 }
 
 class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
@@ -20,7 +20,8 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 		super(props);
 		this.state = {
 			devices: new Array<SmartLightDevice>(),
-			addDevice: false
+			addDevice: false,
+			addDeviceName: ''
 		};
 	}
 
@@ -42,9 +43,9 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 		this.setState({ devices: await this.deviceRepository.getAll() });
 	}
 
-	addDeviceUpdateState(deviceName: string) {
+	addDeviceUpdateState(device: SmartLightDevice) {
 		this.deviceRepository.addDevice(
-			deviceName,
+			device,
 			device => {
 				let devices = this.state.devices;
 				devices.push(device);
@@ -59,8 +60,8 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 				<Portal>
 					<Modal visible={this.state.addDevice} onDismiss={() => this.showAddDeviceModal(false)}
 						   contentContainerStyle={this.styles.modal}>
-						<Text>Device name</Text>
-						<TextInput/>
+						<TextInput mode="outlined" label="Device name" value={this.state.addDeviceName}
+								   onChangeText={this.updateNewDeviceName}/>
 						<Button onPress={this.initDeviceSetup}>Add</Button>
 					</Modal>
 				</Portal>
@@ -75,15 +76,15 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 		);
 	}
 
-	private renderDeviceCard(item: SmartLightDevice) {
+	private renderDeviceCard(device: SmartLightDevice) {
 		return (
 			<Card mode="outlined" style={this.styles.deviceCard}
-				  onLongPress={() => console.log(`${item.name} selected`)}
-				  onPress={() => this.props.parent.goToDeviceControlScreen(item)}>
+				  onLongPress={() => console.log(`${device.name} selected`)}
+				  onPress={() => this.props.parent.goToDeviceControlScreen(device)}>
 
 				<Card.Content style={{ alignItems: "center" }}>
-					<Title>{item.name}</Title>
-					<Paragraph style={{ fontSize: 9 }}>{item.id}</Paragraph>
+					<Title>{device.name}</Title>
+					<Paragraph style={{ fontSize: 9 }}>{device.mac}</Paragraph>
 				</Card.Content>
 
 			</Card>
@@ -96,7 +97,14 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 
 	private initDeviceSetup = () => {
 		this.setState((current) => ({ ...current, addDevice: false }));
-		this.props.parent.goToDeviceSetupScreen();
+		this.props.parent.goToDeviceSetupScreen(this.state.addDeviceName);
+	}
+
+	private updateNewDeviceName = (name: string) => {
+		this.setState((current) => ({
+			...current,
+			addDeviceName: name
+		}));
 	}
 }
 
