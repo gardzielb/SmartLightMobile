@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Switch } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import { TimePicker } from 'react-native-simple-time-picker';
+import ColorPicker from 'react-native-wheel-color-picker';
 
 type DevControlScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceControl'>
 
@@ -17,6 +18,7 @@ type TimeDelay = {
 type DevControlScreenState = {
 	lightOn: boolean,
 	lightColor: string,
+	pickColor: boolean,
 	lightAlpha: number,
 	fadeOut: boolean,
 	fadeDuration: number,
@@ -67,6 +69,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 		this.state = {
 			lightOn: false,
 			lightColor: '#ff00ff',
+			pickColor: false,
 			lightAlpha: 50,
 			fadeOut: false,
 			fadeDuration: 10,
@@ -81,10 +84,6 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 
 	private onLightToggled = (on: boolean) => {
 		this.setState((current) => ({ ...current, lightOn: on }));
-	}
-
-	private chooseColor = () => {
-		console.log('Selecting color');
 	}
 
 	private onAlphaChange = (alpha: number) => {
@@ -107,13 +106,22 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 		this.setState((current) => ({ ...current, executionDelay: delay }))
 	}
 
+	private showColorPicker = (show: boolean) => {
+		this.setState((current) => ({ ...current, pickColor: show }));
+	}
+
+	private onColorChange = (color: string) => {
+		this.setState((current) => ({ ...current, lightColor: color }));
+	}
+
 	private execute = () => {
 		console.log(this.state);
 	}
 
 	private FadeDurationRow = () => {
-		if (!this.state.fadeOut)
+		if (!this.state.fadeOut) {
 			return null;
+		}
 
 		return (
 			<Row>
@@ -129,8 +137,9 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 	}
 
 	private ExecutionDelayRow = () => {
-		if (!this.state.delayExecution)
+		if (!this.state.delayExecution) {
 			return null;
+		}
 
 		return (
 			<Row>
@@ -144,7 +153,22 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 		);
 	}
 
-	render() {
+	private ColorPickerView = () => {
+		return (
+			<View style={{position: 'absolute', paddingLeft: 20, paddingRight: 30 }}>
+				<ColorPicker
+					color={this.state.lightColor}
+					onColorChangeComplete={this.onColorChange}
+					thumbSize={40}
+					sliderSize={40}
+					noSnap={false}
+				/>
+				<Button onPress={() => this.showColorPicker(false)} style={{ marginTop: 20 }}>Submit</Button>
+			</View>
+		);
+	}
+
+	private DeviceControlView = () => {
 		return (
 			<View style={styles.grid}>
 				<Row>
@@ -152,7 +176,8 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 						<Text style={styles.text}>Light on</Text>
 					</Column>
 					<Column span={1}>
-						<Switch style={styles.switch} value={this.state.lightOn} onValueChange={this.onLightToggled}/>
+						<Switch style={styles.switch} value={this.state.lightOn}
+								onValueChange={this.onLightToggled}/>
 					</Column>
 				</Row>
 				<Row>
@@ -161,7 +186,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 					</Column>
 					<Column span={1}>
 						<Text style={{ textAlign: 'center', backgroundColor: this.state.lightColor }}
-							  onPress={this.chooseColor}>
+							  onPress={() => this.showColorPicker(true)}>
 							{this.state.lightColor.toUpperCase()}
 						</Text>
 					</Column>
@@ -180,7 +205,8 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 						<Text style={styles.text}>Fade out</Text>
 					</Column>
 					<Column span={1}>
-						<Switch style={styles.switch} value={this.state.fadeOut} onValueChange={this.onFadeToggled}/>
+						<Switch style={styles.switch} value={this.state.fadeOut}
+								onValueChange={this.onFadeToggled}/>
 					</Column>
 				</Row>
 				<this.FadeDurationRow/>
@@ -201,5 +227,9 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				</Row>
 			</View>
 		);
+	}
+
+	render() {
+		return this.state.pickColor ? (<this.ColorPickerView/>) : (<this.DeviceControlView/>);
 	}
 }
