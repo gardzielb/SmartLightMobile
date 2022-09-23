@@ -1,5 +1,9 @@
 rootProject.name = 'SmartLight'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+
+include ':sp-react-native-mqtt'
+project(':sp-react-native-mqtt').projectDir = new File(rootProject.projectDir,  '../node_modules/sp-react-native-mqtt/android')
+
 include ':app'
 includeBuild('../node_modules/react-native-gradle-plugin')
 

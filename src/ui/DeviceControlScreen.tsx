@@ -6,6 +6,7 @@ import { Button, Switch } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import { TimePicker } from 'react-native-simple-time-picker';
 import ColorPicker from 'react-native-wheel-color-picker';
+import MQTT from 'sp-react-native-mqtt';
 
 type DevControlScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceControl'>
 
@@ -116,6 +117,27 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 
 	private execute = () => {
 		console.log(this.state);
+
+		MQTT.createClient({
+			uri: 'mqtt://192.168.0.102:1883',
+			clientId: 'mobile',
+			host: '192.168.0.102',
+			port: 1883,
+			user: 'bartosz',
+			pass: 'dupa123',
+			auth: true
+		}).then(client => {
+			client.on('connect', () => {
+				console.log('MQTT client connected');
+				client.publish('dupa', 'Fire and blood', 0, false);
+			});
+
+			client.on('error', error => {
+				console.log(`MQTT error: ${error}`);
+			});
+
+			client.connect();
+		});
 	}
 
 	private FadeDurationRow = () => {
@@ -155,7 +177,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 
 	private ColorPickerView = () => {
 		return (
-			<View style={{position: 'absolute', paddingLeft: 20, paddingRight: 30 }}>
+			<View style={{ position: 'absolute', paddingLeft: 20, paddingRight: 30 }}>
 				<ColorPicker
 					color={this.state.lightColor}
 					onColorChangeComplete={this.onColorChange}
@@ -185,7 +207,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 						<Text style={styles.text}>Color</Text>
 					</Column>
 					<Column span={1}>
-						<Text style={{ textAlign: 'center', backgroundColor: this.state.lightColor }}
+						<Text style={{ height: 40, textAlign: 'center', backgroundColor: this.state.lightColor }}
 							  onPress={() => this.showColorPicker(true)}>
 							{this.state.lightColor.toUpperCase()}
 						</Text>

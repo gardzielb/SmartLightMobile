@@ -2,7 +2,7 @@ import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { Button, Card, Modal, Paragraph, Portal, Provider, Title, TextInput } from "react-native-paper";
 import SmartLightDevice from "../model/SmartLightDevice";
-import DeviceRepository from '../data/DeviceRepository';
+import DeviceRepository from '../dm/DeviceRepository';
 import MainScreen from './MainScreen';
 
 type DevicesViewProps = {
