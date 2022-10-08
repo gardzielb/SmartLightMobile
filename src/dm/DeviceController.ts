@@ -1,16 +1,17 @@
 import { SmartLightState } from './SmartLightState';
 import MQTT, { IMqttClient } from 'sp-react-native-mqtt';
 import uuid from 'react-native-uuid';
+import { MQTT_BROKER_URL, MQTT_USER, MQTT_PASSWD } from '@env';
 
 export default class DeviceController {
 	private mqttClient: IMqttClient | undefined
 
 	private constructor() {
 		MQTT.createClient({
-			uri: 'mqtt://192.168.1.105:1883',
+			uri: MQTT_BROKER_URL,
 			clientId: uuid.v4().toString(),
-			user: 'bartosz',
-			pass: 'dupa123',
+			user: MQTT_USER,
+			pass: MQTT_PASSWD,
 			auth: true
 		}).then(client => {
 			client.on('connect', () => {

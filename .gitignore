@@ -63,3 +63,4 @@ buck-out/
 /vendor/bundle/
 
 qr*.png
+.env
