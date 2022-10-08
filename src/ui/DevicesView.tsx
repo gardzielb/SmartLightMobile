@@ -81,8 +81,8 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 				<Portal>
 					<Modal visible={this.state.addDevice} onDismiss={() => this.showAddDeviceModal(false)}
 						   contentContainerStyle={this.styles.modal}>
-						<TextInput mode="flat" style={{backgroundColor: '#ffffff'}} label="Device name" value={this.state.addDeviceName}
-								   onChangeText={this.updateNewDeviceName}/>
+						<TextInput mode="flat" style={SLStyle.textInput} label="Device name"
+								   value={this.state.addDeviceName} onChangeText={this.updateNewDeviceName}/>
 						<Button style={SLStyle.button} onPress={this.initDeviceSetup}>Add</Button>
 					</Modal>
 
@@ -106,7 +106,7 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 					numColumns={2}
 					keyExtractor={(item, index) => index.toString()}/>
 
-				<Button style={SLStyle.button}
+				<Button style={{...SLStyle.button, marginBottom: 20}}
 						onPress={() => this.showAddDeviceModal(true)}>Add device</Button>
 			</Provider>
 		);
