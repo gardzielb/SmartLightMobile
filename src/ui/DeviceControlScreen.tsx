@@ -65,8 +65,6 @@ const Row = ({ children }: RowProps) => (
 )
 
 export default class DeviceControlScreen extends React.Component<DevControlScreenProps, DevControlScreenState> {
-	private deviceController = new DeviceController();
-
 	constructor(props: DevControlScreenProps) {
 		super(props);
 		this.state = {
@@ -121,15 +119,16 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 		let execDelay = this.state.executionDelay;
 		let execDelaySec = execDelay.hours * 3600 + execDelay.minutes * 60 + execDelay.seconds;
 
-		let requiredState = {
-			on: this.state.lightOn,
-			color: this.state.lightColor,
-			alpha: this.state.lightAlpha,
-			fade: this.state.fadeOut ? this.state.fadeDuration : undefined,
-			delay: execDelaySec != 0 ? execDelaySec : undefined
-		};
-
-		this.deviceController.applyState(requiredState, this.props.route.params.device.name);
+		DeviceController.get().applyState(
+			this.props.route.params.device.name,
+			{
+				on: this.state.lightOn,
+				color: this.state.lightColor,
+				alpha: this.state.lightAlpha,
+				fade: this.state.fadeOut ? this.state.fadeDuration : undefined,
+				delay: execDelaySec != 0 ? execDelaySec : undefined
+			}
+		);
 	}
 
 	private FadeDurationRow = () => {

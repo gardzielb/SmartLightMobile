@@ -5,7 +5,7 @@ import uuid from 'react-native-uuid';
 export default class DeviceController {
 	private mqttClient: IMqttClient | undefined
 
-	constructor() {
+	private constructor() {
 		MQTT.createClient({
 			uri: 'mqtt://192.168.1.105:1883',
 			clientId: uuid.v4().toString(),
@@ -27,9 +27,18 @@ export default class DeviceController {
 		});
 	}
 
-	public applyState(targetState: SmartLightState, deviceName: string) {
+	public applyState(deviceName: string, targetState: SmartLightState) {
 		console.log(targetState);
 		let topic = `/smart_light/${deviceName.toLowerCase().replace(' ', '-')}`;
 		this.mqttClient?.publish(topic, JSON.stringify(targetState), 0, false);
+	}
+
+	private static instance: DeviceController | null = null
+
+	public static get() {
+		if (this.instance === null) {
+			this.instance = new DeviceController();
+		}
+		return this.instance;
 	}
 }

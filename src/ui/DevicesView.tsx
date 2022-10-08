@@ -1,9 +1,10 @@
 import React from "react";
-import { FlatList, StyleSheet } from "react-native";
-import { Button, Card, Modal, Paragraph, Portal, Provider, Title, TextInput } from "react-native-paper";
+import { FlatList, StyleSheet, View } from "react-native";
+import { Switch, Text, Button, Card, Modal, Paragraph, Portal, Provider, Title, TextInput } from "react-native-paper";
 import SmartLightDevice from "../model/SmartLightDevice";
 import DeviceRepository from '../dm/DeviceRepository';
 import MainScreen from './MainScreen';
+import DeviceController from '../dm/DeviceController';
 
 type DevicesViewProps = {
 	parent: MainScreen
@@ -12,7 +13,9 @@ type DevicesViewProps = {
 type DevicesViewState = {
 	devices: Array<SmartLightDevice>,
 	addDevice: boolean,
-	addDeviceName: string
+	addDeviceName: string,
+	removeDevice: SmartLightDevice | undefined,
+	removeResetConfig: boolean
 }
 
 class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
@@ -21,7 +24,9 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 		this.state = {
 			devices: new Array<SmartLightDevice>(),
 			addDevice: false,
-			addDeviceName: ''
+			addDeviceName: '',
+			removeDevice: undefined,
+			removeResetConfig: false
 		};
 	}
 
@@ -35,11 +40,26 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 		modal: {
 			backgroundColor: 'white',
 			padding: 20
+		},
+		modalTitle: {
+			fontSize: 20,
+			fontWeight: 'bold',
+			marginBottom: 20
+		},
+		modalText: {
+			fontSize: 16
+		},
+		row: {
+			flexDirection: 'row',
+			marginBottom: 10
+		},
+		switch: {
+			alignSelf: 'flex-end',
+			marginLeft: 30
 		}
 	});
 
 	async componentDidMount() {
-		console.log('Mounted devices view');
 		this.setState({ devices: await this.deviceRepository.getAll() });
 	}
 
@@ -49,7 +69,7 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 			device => {
 				let devices = this.state.devices;
 				devices.push(device);
-				this.setState({ devices: devices });
+				this.setState({ devices: devices, addDeviceName: '' });
 			}
 		).then();
 	}
@@ -63,6 +83,20 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 						<TextInput mode="outlined" label="Device name" value={this.state.addDeviceName}
 								   onChangeText={this.updateNewDeviceName}/>
 						<Button onPress={this.initDeviceSetup}>Add</Button>
+					</Modal>
+
+					<Modal visible={this.state.removeDevice !== undefined}
+						   onDismiss={() => this.initRemoveDevice(undefined)}
+						   contentContainerStyle={this.styles.modal}>
+
+						<Text style={this.styles.modalTitle}>{`Remove device ${this.state.removeDevice?.name}?`}</Text>
+						<View style={this.styles.row}>
+							<Text style={this.styles.modalText}>Reset configuration</Text>
+							<Switch style={this.styles.switch} value={this.state.removeResetConfig}
+									onValueChange={this.onResetConfigChange}/>
+						</View>
+						<Button onPress={this.removeDevice}>Remove</Button>
+
 					</Modal>
 				</Portal>
 				<FlatList
@@ -79,7 +113,7 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 	private renderDeviceCard(device: SmartLightDevice) {
 		return (
 			<Card mode="outlined" style={this.styles.deviceCard}
-				  onLongPress={() => console.log(`${device.name} selected`)}
+				  onLongPress={() => this.initRemoveDevice(device)}
 				  onPress={() => this.props.parent.goToDeviceControlScreen(device)}>
 
 				<Card.Content style={{ alignItems: "center" }}>
@@ -105,6 +139,46 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 			...current,
 			addDeviceName: name
 		}));
+	}
+
+	private initRemoveDevice = (target: SmartLightDevice | undefined) => {
+		this.setState((current) => ({
+			...current,
+			removeDevice: target,
+			removeResetConfig: false
+		}));
+	}
+
+	private onResetConfigChange = (resetConfig: boolean) => {
+		this.setState((current) => ({
+			...current,
+			removeResetConfig: resetConfig
+		}));
+	}
+
+	private removeDevice = () => {
+		if (this.state.removeDevice === undefined) {
+			return;
+		}
+
+		this.deviceRepository.removeDevice(this.state.removeDevice).then(() => {
+			let devices = this.state.devices;
+			let removedDevice = this.state.removeDevice;
+			if (removedDevice === undefined) {
+				return;
+			}
+
+			if (this.state.removeResetConfig) {
+				DeviceController.get().applyState(removedDevice.name, { reset: true });
+			}
+
+			this.setState((current) => ({
+				...current,
+				devices: devices.filter(device => device.name !== removedDevice?.name),
+				removeDevice: undefined,
+				removeResetConfig: false
+			}));
+		});
 	}
 }
 

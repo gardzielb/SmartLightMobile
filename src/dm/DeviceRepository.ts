@@ -2,15 +2,13 @@ import 'react-native-get-random-values';
 import Realm, { Object } from 'realm';
 import SmartLightDevice from '../model/SmartLightDevice';
 
-const { ObjectId } = Realm.BSON;
 const DeviceSchema = {
 	name: 'Device',
 	properties: {
-		_id: 'objectId',
 		name: 'string',
 		mac: 'string'
 	},
-	primaryKey: '_id'
+	primaryKey: 'mac'
 };
 
 export default class DeviceRepository {
@@ -20,7 +18,7 @@ export default class DeviceRepository {
 			let deviceEntity = realm.create(
 				'Device',
 				{
-					_id: new ObjectId(),
+					// _id: new ObjectId(),
 					... device
 				}
 			);
@@ -35,6 +33,13 @@ export default class DeviceRepository {
 
 		realm.close();
 		return devices;
+	}
+
+	async removeDevice(device: SmartLightDevice) {
+		let realm = await this.openRealm();
+		let deviceEntity = realm.objectForPrimaryKey('Device', device.mac);
+		realm.write(() => realm.delete(deviceEntity));
+		realm.close();
 	}
 
 	private async openRealm() {
