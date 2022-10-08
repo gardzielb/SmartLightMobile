@@ -1,8 +1,7 @@
 export type SmartLightState = {
-	lightOn: boolean,
-	lightColor: { r: number, g: number, b: number },
-	lightAlpha: number,
-	fadeOut: boolean,
-	fadeDuration: number,
-	executionDelay: number
+	on: boolean,
+	color: string,
+	alpha: number,
+	fade: number | undefined, // 0 - don't fade, > 0 - duration period in seconds
+	delay: number | undefined
 };

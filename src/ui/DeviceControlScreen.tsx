@@ -6,7 +6,7 @@ import { Button, Switch } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import { TimePicker } from 'react-native-simple-time-picker';
 import ColorPicker from 'react-native-wheel-color-picker';
-import MQTT from 'sp-react-native-mqtt';
+import DeviceController from '../dm/DeviceController';
 
 type DevControlScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceControl'>
 
@@ -65,6 +65,8 @@ const Row = ({ children }: RowProps) => (
 )
 
 export default class DeviceControlScreen extends React.Component<DevControlScreenProps, DevControlScreenState> {
+	private deviceController = new DeviceController();
+
 	constructor(props: DevControlScreenProps) {
 		super(props);
 		this.state = {
@@ -116,27 +118,15 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 	}
 
 	private execute = () => {
-		console.log(this.state);
+		let execDelay = this.state.executionDelay;
+		let execDelaySec = execDelay.hours * 3600 + execDelay.minutes * 60 + execDelay.seconds;
 
-		MQTT.createClient({
-			uri: 'mqtt://192.168.0.102:1883',
-			clientId: 'mobile',
-			host: '192.168.0.102',
-			port: 1883,
-			user: 'bartosz',
-			pass: 'dupa123',
-			auth: true
-		}).then(client => {
-			client.on('connect', () => {
-				console.log('MQTT client connected');
-				client.publish('dupa', 'Fire and blood', 0, false);
-			});
-
-			client.on('error', error => {
-				console.log(`MQTT error: ${error}`);
-			});
-
-			client.connect();
+		this.deviceController.applyState({
+			on: this.state.lightOn,
+			color: this.state.lightColor,
+			alpha: this.state.lightAlpha,
+			fade: this.state.fadeOut ? this.state.fadeDuration : undefined,
+			delay: execDelaySec != 0 ? execDelaySec : undefined
 		});
 	}
 
