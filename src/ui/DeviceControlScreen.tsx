@@ -7,6 +7,7 @@ import Slider from '@react-native-community/slider';
 import { TimePicker } from 'react-native-simple-time-picker';
 import ColorPicker from 'react-native-wheel-color-picker';
 import DeviceController from '../dm/DeviceController';
+import { SLStyle } from './styles';
 
 type DevControlScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceControl'>
 
@@ -176,7 +177,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 					sliderSize={40}
 					noSnap={false}
 				/>
-				<Button onPress={() => this.showColorPicker(false)} style={{ marginTop: 20 }}>Submit</Button>
+				<Button style={SLStyle.button} onPress={() => this.showColorPicker(false)}>Submit</Button>
 			</View>
 		);
 	}
@@ -235,7 +236,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				<this.ExecutionDelayRow/>
 				<Row>
 					<Column span={2}>
-						<Button onPress={this.execute}>Execute</Button>
+						<Button style={SLStyle.button} onPress={this.execute}>Execute</Button>
 					</Column>
 				</Row>
 			</View>

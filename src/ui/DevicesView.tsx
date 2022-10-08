@@ -5,6 +5,7 @@ import SmartLightDevice from "../model/SmartLightDevice";
 import DeviceRepository from '../dm/DeviceRepository';
 import MainScreen from './MainScreen';
 import DeviceController from '../dm/DeviceController';
+import { SLStyle } from './styles';
 
 type DevicesViewProps = {
 	parent: MainScreen
@@ -80,9 +81,9 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 				<Portal>
 					<Modal visible={this.state.addDevice} onDismiss={() => this.showAddDeviceModal(false)}
 						   contentContainerStyle={this.styles.modal}>
-						<TextInput mode="outlined" label="Device name" value={this.state.addDeviceName}
+						<TextInput mode="flat" style={{backgroundColor: '#ffffff'}} label="Device name" value={this.state.addDeviceName}
 								   onChangeText={this.updateNewDeviceName}/>
-						<Button onPress={this.initDeviceSetup}>Add</Button>
+						<Button style={SLStyle.button} onPress={this.initDeviceSetup}>Add</Button>
 					</Modal>
 
 					<Modal visible={this.state.removeDevice !== undefined}
@@ -95,7 +96,7 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 							<Switch style={this.styles.switch} value={this.state.removeResetConfig}
 									onValueChange={this.onResetConfigChange}/>
 						</View>
-						<Button onPress={this.removeDevice}>Remove</Button>
+						<Button style={SLStyle.button} onPress={this.removeDevice}>Remove</Button>
 
 					</Modal>
 				</Portal>
@@ -105,7 +106,8 @@ class DevicesView extends React.Component<DevicesViewProps, DevicesViewState> {
 					numColumns={2}
 					keyExtractor={(item, index) => index.toString()}/>
 
-				<Button onPress={() => this.showAddDeviceModal(true)}>Add device</Button>
+				<Button style={SLStyle.button}
+						onPress={() => this.showAddDeviceModal(true)}>Add device</Button>
 			</Provider>
 		);
 	}
