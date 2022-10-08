@@ -27,8 +27,9 @@ export default class DeviceController {
 		});
 	}
 
-	public applyState(targetState: SmartLightState) {
+	public applyState(targetState: SmartLightState, deviceName: string) {
 		console.log(targetState);
-		this.mqttClient?.publish('/smart_light/deana', JSON.stringify(targetState), 0, false);
+		let topic = `/smart_light/${deviceName.toLowerCase().replace(' ', '-')}`;
+		this.mqttClient?.publish(topic, JSON.stringify(targetState), 0, false);
 	}
 }
