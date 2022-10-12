@@ -12,9 +12,9 @@ export default class DeviceConfigScreen extends React.Component<ConfigScreenProp
 	constructor(props: ConfigScreenProps) {
 		super(props);
 		this.state = {
-			deviceName: '',
-			wifiSSID: '',
-			wifiPassword: ''
+			deviceName: 'Deana',
+			wifiSSID: 'MinasTirith',
+			wifiPassword: 'TwarzCzyDupa123'
 		};
 	}
 

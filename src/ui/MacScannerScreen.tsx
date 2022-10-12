@@ -6,6 +6,7 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import { StyleSheet } from 'react-native';
 import SmartLightDevice from '../model/SmartLightDevice';
+import BleSetupController from '../dm/BleSetupController';
 
 type MacScannerScreenProps = NativeStackScreenProps<RootStackParams, 'MacScanner'>
 
@@ -19,12 +20,17 @@ export default class MacScannerScreen extends React.Component<MacScannerScreenPr
 		}
 	});
 
-	private onSuccess = async (event: BarCodeReadEvent) => {
+	private onSuccess = (event: BarCodeReadEvent) => {
 		let devConfig = this.props.route.params;
-		let addedDevice = new SmartLightDevice(devConfig.deviceName, event.data);
-		console.log(`Adding device ${addedDevice} with WiFi config '${devConfig.wifiSSID}:${devConfig.wifiPassword}'`);
-		this.props.navigation.navigate('Main', { addedDevice: addedDevice });
+		let device = new SmartLightDevice(devConfig.deviceName, event.data);
+
+		let setupController = new BleSetupController(() => this.onDeviceSetupCompleted(device));
+		setupController.setupDevice(device.mac, devConfig);
 	};
+
+	private onDeviceSetupCompleted(device: SmartLightDevice) {
+		this.props.navigation.navigate('Main', { addedDevice: device });
+	}
 
 	render() {
 		return (
