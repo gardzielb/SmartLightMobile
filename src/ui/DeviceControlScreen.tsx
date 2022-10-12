@@ -28,24 +28,6 @@ type DevControlScreenState = {
 	executionDelay: TimeDelay
 }
 
-const styles = StyleSheet.create({
-	grid: {
-		flex: 2, // the number of columns you want to devide the screen into
-		marginHorizontal: '5%'
-	},
-	row: {
-		flexDirection: 'row',
-		marginTop: '10%'
-	},
-	text: {
-		fontSize: 16,
-		color: "#000000"
-	},
-	switch: {
-		marginBottom: -10
-	}
-});
-
 type ColumnProps = {
 	span: number
 	children: ReactNode
@@ -54,25 +36,53 @@ type ColumnProps = {
 const Column = ({ span, children }: ColumnProps) => {
 	return (
 		<View style={{ flex: span }}>{children}</View>
-	)
-}
+	);
+};
 
 type RowProps = {
 	children: ReactNode,
 }
 
 const Row = ({ children }: RowProps) => (
-	<View style={styles.row}>{children}</View>
-)
+	<View style={{ flexDirection: 'row', marginTop: '13%' }}>
+		{children}
+	</View>
+);
 
 export default class DeviceControlScreen extends React.Component<DevControlScreenProps, DevControlScreenState> {
 	private deviceController = DeviceController.get();
+	private styles = StyleSheet.create({
+		grid: {
+			flex: 2, // the number of columns you want to devide the screen into
+			marginHorizontal: '5%'
+		},
+		text: {
+			fontSize: 16,
+			color: '#000000'
+		},
+		switch: {
+			marginBottom: -10
+		},
+		colorButton: {
+			position: 'absolute',
+			marginTop: -10,
+			height: 40,
+			borderRadius: 10,
+			borderWidth: 1,
+			borderStyle: 'solid',
+			borderColor: '#000000',
+			width: 80,
+			alignSelf: 'flex-end',
+			paddingTop: 10,
+			textAlign: 'center'
+		}
+	});
 
 	constructor(props: DevControlScreenProps) {
 		super(props);
 		this.state = {
 			lightOn: false,
-			lightColor: '#ff00ff',
+			lightColor: '#ffffff',
 			pickColor: false,
 			lightAlpha: 50,
 			fadeOut: false,
@@ -88,35 +98,35 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 
 	private onLightToggled = (on: boolean) => {
 		this.setState((current) => ({ ...current, lightOn: on }));
-	}
+	};
 
 	private onAlphaChange = (alpha: number) => {
 		this.setState((current) => ({ ...current, lightAlpha: alpha }));
-	}
+	};
 
 	private onFadeToggled = (on: boolean) => {
 		this.setState((current) => ({ ...current, fadeOut: on }));
-	}
+	};
 
 	private onFadeDurationChange = (duration: number) => {
 		this.setState((current) => ({ ...current, fadeDuration: duration }));
-	}
+	};
 
 	private onDelayToggled = (delay: boolean) => {
-		this.setState((current) => ({ ...current, delayExecution: delay }))
-	}
+		this.setState((current) => ({ ...current, delayExecution: delay }));
+	};
 
 	private onExecutionDelayChange = (delay: TimeDelay) => {
-		this.setState((current) => ({ ...current, executionDelay: delay }))
-	}
+		this.setState((current) => ({ ...current, executionDelay: delay }));
+	};
 
 	private showColorPicker = (show: boolean) => {
 		this.setState((current) => ({ ...current, pickColor: show }));
-	}
+	};
 
 	private onColorChange = (color: string) => {
 		this.setState((current) => ({ ...current, lightColor: color }));
-	}
+	};
 
 	private execute = () => {
 		let execDelay = this.state.executionDelay;
@@ -132,7 +142,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				delay: execDelaySec != 0 ? execDelaySec : undefined
 			}
 		);
-	}
+	};
 
 	private FadeDurationRow = () => {
 		if (!this.state.fadeOut) {
@@ -142,7 +152,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 		return (
 			<Row>
 				<Column span={1}>
-					<Text style={styles.text}>Fading duration</Text>
+					<Text style={this.styles.text}>Fading duration</Text>
 				</Column>
 				<Column span={1}>
 					<Slider minimumValue={3} maximumValue={15} step={1} value={this.state.fadeDuration}
@@ -150,7 +160,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				</Column>
 			</Row>
 		);
-	}
+	};
 
 	private ExecutionDelayRow = () => {
 		if (!this.state.delayExecution) {
@@ -167,7 +177,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				</Column>
 			</Row>
 		);
-	}
+	};
 
 	private ColorPickerView = () => {
 		return (
@@ -182,26 +192,26 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				<Button style={SLStyle.button} onPress={() => this.showColorPicker(false)}>Submit</Button>
 			</View>
 		);
-	}
+	};
 
 	private DeviceControlView = () => {
 		return (
-			<View style={styles.grid}>
+			<View style={this.styles.grid}>
 				<Row>
 					<Column span={1}>
-						<Text style={styles.text}>Light on</Text>
+						<Text style={this.styles.text}>Light on</Text>
 					</Column>
 					<Column span={1}>
-						<Switch style={styles.switch} value={this.state.lightOn}
+						<Switch style={this.styles.switch} value={this.state.lightOn}
 								onValueChange={this.onLightToggled}/>
 					</Column>
 				</Row>
 				<Row>
 					<Column span={1}>
-						<Text style={styles.text}>Color</Text>
+						<Text style={this.styles.text}>Color</Text>
 					</Column>
 					<Column span={1}>
-						<Text style={{ height: 40, textAlign: 'center', backgroundColor: this.state.lightColor }}
+						<Text style={{ ...this.styles.colorButton, backgroundColor: this.state.lightColor }}
 							  onPress={() => this.showColorPicker(true)}>
 							{this.state.lightColor.toUpperCase()}
 						</Text>
@@ -209,7 +219,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				</Row>
 				<Row>
 					<Column span={1}>
-						<Text style={styles.text}>Intensity</Text>
+						<Text style={this.styles.text}>Intensity</Text>
 					</Column>
 					<Column span={1}>
 						<Slider minimumValue={5} maximumValue={100} step={5} value={this.state.lightAlpha}
@@ -218,20 +228,20 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				</Row>
 				<Row>
 					<Column span={1}>
-						<Text style={styles.text}>Fade out</Text>
+						<Text style={this.styles.text}>Fade out</Text>
 					</Column>
 					<Column span={1}>
-						<Switch style={styles.switch} value={this.state.fadeOut}
+						<Switch style={this.styles.switch} value={this.state.fadeOut}
 								onValueChange={this.onFadeToggled}/>
 					</Column>
 				</Row>
 				<this.FadeDurationRow/>
 				<Row>
 					<Column span={1}>
-						<Text style={styles.text}>Delay execution</Text>
+						<Text style={this.styles.text}>Delay execution</Text>
 					</Column>
 					<Column span={1}>
-						<Switch style={styles.switch} value={this.state.delayExecution}
+						<Switch style={this.styles.switch} value={this.state.delayExecution}
 								onValueChange={this.onDelayToggled}/>
 					</Column>
 				</Row>
@@ -243,7 +253,7 @@ export default class DeviceControlScreen extends React.Component<DevControlScree
 				</Row>
 			</View>
 		);
-	}
+	};
 
 	render() {
 		return this.state.pickColor ? (<this.ColorPickerView/>) : (<this.DeviceControlView/>);

@@ -7,9 +7,9 @@ import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import { StyleSheet } from 'react-native';
 import SmartLightDevice from '../model/SmartLightDevice';
 
-type DevSetupScreenProps = NativeStackScreenProps<RootStackParams, 'DeviceSetup'>
+type MacScannerScreenProps = NativeStackScreenProps<RootStackParams, 'MacScanner'>
 
-export default class DeviceConfigurationScreen extends React.Component<DevSetupScreenProps, any> {
+export default class MacScannerScreen extends React.Component<MacScannerScreenProps, any> {
 	private styles = StyleSheet.create({
 		centerText: {
 			flex: 1,
@@ -20,8 +20,9 @@ export default class DeviceConfigurationScreen extends React.Component<DevSetupS
 	});
 
 	private onSuccess = async (event: BarCodeReadEvent) => {
-		console.log(`Decoded device address: ${event.data}`);
-		let addedDevice = new SmartLightDevice(this.props.route.params.deviceName, event.data);
+		let devConfig = this.props.route.params;
+		let addedDevice = new SmartLightDevice(devConfig.deviceName, event.data);
+		console.log(`Adding device ${addedDevice} with WiFi config '${devConfig.wifiSSID}:${devConfig.wifiPassword}'`);
 		this.props.navigation.navigate('Main', { addedDevice: addedDevice });
 	};
 

@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const SLStyle = StyleSheet.create({
 	button: {
@@ -8,5 +8,10 @@ export const SLStyle = StyleSheet.create({
 	},
 	textInput: {
 		backgroundColor: '#ffffff'
+	},
+	modal: {
+		marginHorizontal: 30,
+		backgroundColor: 'white',
+		padding: 20
 	}
 });

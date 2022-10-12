@@ -6,6 +6,10 @@ class SmartLightDevice {
 		this.name = name;
 		this.mac = mac;
 	}
+
+	toString() {
+		return `${this.name}(${this.mac})`;
+	}
 }
 
 export default SmartLightDevice;

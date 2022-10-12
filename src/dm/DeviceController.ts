@@ -1,6 +1,7 @@
 import { SmartLightState } from './SmartLightState';
 import MQTT, { IMqttClient } from 'sp-react-native-mqtt';
 import uuid from 'react-native-uuid';
+// @ts-ignore
 import { MQTT_BROKER_URL, MQTT_USER, MQTT_PASSWD } from '@env';
 
 export default class DeviceController {

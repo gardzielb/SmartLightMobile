@@ -1,7 +1,9 @@
 import SmartLightDevice from './model/SmartLightDevice';
+import { SmartLightConfig } from './model/SmartLightConfig';
 
 export type RootStackParams = {
 	Main: { addedDevice: SmartLightDevice } | undefined,
-	DeviceSetup: { deviceName: string },
-	DeviceControl: { device: SmartLightDevice }
+	DeviceControl: { device: SmartLightDevice },
+	DeviceConfig: undefined,
+	MacScanner: SmartLightConfig
 }
